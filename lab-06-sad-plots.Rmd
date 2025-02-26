@@ -126,7 +126,7 @@ staff_long
 And now let's plot is as a line plot.
 A possible approach for creating a line plot where we color the lines by faculty type is the following:
 
-```{r fig.width = 10, fig.fullwidth = TRUE}
+```{r faculty, fig.width = 10, fig.fullwidth = TRUE}
 staff_long %>%
   ggplot(aes(x = year, y = value, color = faculty_type)) +
   geom_line() 
@@ -136,7 +136,7 @@ But note that this results in a message as well as an unexpected plot.
 The message is saying that there is only one observation for each faculty type year combination.
 We can fix this using the `group` aesthetic following.
 
-```{r fig.width = 10, fig.fullwidth = TRUE}
+```{r faculty_named, fig.width = 10, fig.fullwidth = TRUE}
 staff_long %>%
   ggplot(aes(x = year, y = value, group = faculty_type, color = faculty_type)) +
   geom_line() + 
@@ -158,7 +158,7 @@ staff_long %>%
 
 3.  Implement the changes you proposed in the previous exercise.
 
-```{r fig.width = 10, fig.fullwidth = TRUE}
+```{r part_time, fig.width = 10, fig.fullwidth = TRUE}
 staff_long %>%
   ggplot(aes(x = year, y = value, group = faculty_type, color = faculty_type)) +
   geom_line() + 
@@ -190,13 +190,32 @@ knitr::include_graphics("img/fisheries.png")
 
 4.  Can you help them make improve it? First, brainstorm how you would improve it. Then create the improved visualization and write up the changes/decisions you made as bullet points. It's ok if some of your improvements are aspirational, i.e. you don't know how to implement it, but you think it's a good idea.
 
+***We can make the capture vs agriculture from each place a proportion of each other. We can put all this data on one bar chart graph and make it look pretty with a nice key. We can also look at the countries that have the fisheries total above 1000000 to only look at ones that have a lot of numbers.***
+
 Load the data.
 
-```{r load-data-fisheries, eval = FALSE}
+```{r load-data-fisheries, eval = TRUE}
 fisheries <- read_csv("data/fisheries.csv")
 ```
 
 5.  Create a new data visualisation for these data that implements the improvements you proposed in the previous exercise (or many of them as you can).
+
+```{r fisheries_bar}
+fisheries %>%
+  filter(total >= 1000000) %>%
+  mutate(country = fct_reorder(country, aquaculture, min)) %>%
+  select(-total) %>%
+  pivot_longer(cols = -country, names_to = "type") %>%
+  ggplot(aes(y = country, x = value, fill = type)) + 
+  geom_bar(stat = "identity", position = "fill") + 
+  scale_fill_manual(values = c('lightblue', "darkblue")) + 
+  theme(legend.title = element_blank()) + 
+  theme(legend.position="top") + 
+  labs(title = "Fishing by Country") + 
+  xlab("Proportion") + 
+  ylab("")
+```
+
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
 
